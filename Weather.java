@@ -19,3 +19,15 @@ public class WeatherApp {
         return response.toString();
     }
 }
+import org.json.JSONObject;
+
+public class WeatherParser {
+    public static void parseWeatherData(String jsonResponse) {
+        JSONObject jsonObject = new JSONObject(jsonResponse);
+        JSONObject main = jsonObject.getJSONObject("main");
+        String description = jsonObject.getJSONArray("weather").getJSONObject(0).getString("description");
+        double temperature = main.getDouble("temp");
+        int humidity = main.getInt("humidity");
+        // Process and display the data as needed
+    }
+}
