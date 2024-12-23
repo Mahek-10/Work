@@ -3,8 +3,6 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Scanner;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 
 public class WeatherApp {
     private static final String API_KEY = "YOUR_API_KEY"; // Replace with your OpenWeatherMap API key
@@ -34,10 +32,10 @@ public class WeatherApp {
                 }
                 reader.close();
 
-                // Parse the JSON response using Gson
-                JsonObject jsonObject = JsonParser.parseString(response.toString()).getAsJsonObject();
-                String weatherDescription = jsonObject.getAsJsonArray("weather").get(0).getAsJsonObject().get("description").getAsString();
-                double temperature = jsonObject.getAsJsonObject("main").get("temp").getAsDouble();
+                // Manually parse the JSON response
+                String jsonResponse = response.toString();
+                String weatherDescription = parseWeatherDescription(jsonResponse);
+                double temperature = parseTemperature(jsonResponse);
 
                 System.out.println("Weather in " + city + ": " + weatherDescription);
                 System.out.println("Temperature: " + temperature + "°C");
@@ -49,5 +47,19 @@ public class WeatherApp {
         } finally {
             scanner.close();
         }
+    }
+
+    private static String parseWeatherDescription(String jsonResponse) {
+        String key = "\"description\":\"";
+        int startIndex = jsonResponse.indexOf(key) + key.length();
+        int endIndex = jsonResponse.indexOf("\"", startIndex);
+        return jsonResponse.substring(startIndex, endIndex);
+    }
+
+    private static double parseTemperature(String jsonResponse) {
+        String key = "\"temp\":";
+        int startIndex = jsonResponse.indexOf(key) + key.length();
+        int endIndex = jsonResponse.indexOf(",", startIndex);
+        return Double.parseDouble(jsonResponse.substring(startIndex, endIndex));
     }
 }
